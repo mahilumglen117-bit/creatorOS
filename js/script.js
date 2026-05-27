@@ -134,7 +134,7 @@ function renderTasks(filter = 'all') {
 
     // Render Active Tasks
     if (activeTasks.length > 0) {
-        list.innerHTML = `<h3 class="text-lg font-semibold mb-4">Active Tasks</h3>`;
+        list.innerHTML = `<h3 class="text-lg font-semibold mb-4"></h3>`;
         
         activeTasks.forEach(task => {
             const badgeColor = task.priority === 'high' ? 'text-red-400' : (task.priority === 'medium' ? 'text-yellow-400' : 'text-blue-400');
