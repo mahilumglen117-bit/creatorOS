@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CreatorOS | Premium Dashboard</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="h-screen flex">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 glass-panel transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col">
+        <div class="p-6 flex items-center justify-between">
+            <h1 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-pink-500">
+                CreatorOS
+            </h1>
+            <i class="fas fa-times md:hidden cursor-pointer text-gray-400" onclick="toggleSidebar()"></i>
+        </div>
+
+        <nav class="flex-1 px-4 space-y-2 mt-4">
+            <a href="#" onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item flex items-center p-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors active-nav">
+                <i class="fas fa-th-large w-6"></i> Dashboard
+            </a>
+            <a href="#" onclick="switchTab('tasks')" id="nav-tasks" class="nav-item flex items-center p-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
+                <i class="fas fa-check-double w-6"></i> Tasks
+            </a>
+            <a href="#" onclick="switchTab('revenue')" id="nav-revenue" class="nav-item flex items-center p-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
+                <i class="fas fa-wallet w-6"></i> Revenue
+            </a>
+        </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 md:ml-64 flex flex-col h-screen relative overflow-hidden">
+        
+        <!-- HEADER -->
+        <header class="h-16 glass-panel flex items-center justify-between px-4 md:px-8 z-20">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleSidebar()" class="md:hidden text-gray-300 text-xl">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h2 id="page-title" class="text-xl font-semibold text-white">Dashboard</h2>
+            </div>
+        </header>
+
+        <!-- CONTENT SCROLL AREA -->
+        <div class="flex-1 overflow-y-auto p-4 md:p-8">
+            
+            <!-- DASHBOARD VIEW -->
+            <div id="view-dashboard" class="animate-fade-in">
+                <!-- Top Stats Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="glass-card p-5 rounded-2xl">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="w-10 h-10 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center"><i class="fas fa-tasks"></i></div>
+                            <span class="text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded-full">+12%</span>
+                        </div>
+                        <h3 class="text-gray-400 text-sm">Today's Tasks</h3>
+                        <p class="text-2xl font-bold mt-1" id="dash-today-tasks">0</p>
+                    </div>
+                    
+                    <div class="glass-card p-5 rounded-2xl">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="w-10 h-10 rounded-lg bg-pink-500/20 text-pink-400 flex items-center justify-center"><i class="fas fa-fire"></i></div>
+                            <span class="text-xs text-yellow-400 bg-yellow-400/10 px-2 py-1 rounded-full">Streak</span>
+                        </div>
+                        <h3 class="text-gray-400 text-sm">Consistency</h3>
+                        <p class="text-2xl font-bold mt-1" id="dash-streak">0 Days</p>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-2xl">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="w-10 h-10 rounded-lg bg-green-500/20 text-green-400 flex items-center justify-center"><i class="fas fa-dollar-sign"></i></div>
+                        </div>
+                        <h3 class="text-gray-400 text-sm">Est. Revenue</h3>
+                        <p class="text-2xl font-bold mt-1" id="dash-revenue">$0.00</p>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-2xl">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="w-10 h-10 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center"><i class="fas fa-bullseye"></i></div>
+                        </div>
+                        <h3 class="text-gray-400 text-sm">Weekly Goal</h3>
+                        <p class="text-2xl font-bold mt-1" id="dash-progress">0%</p>
+                    </div>
+                </div>
+
+                <!-- Mid Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    <!-- Activity Chart -->
+                    <div class="glass-card p-6 rounded-2xl lg:col-span-2">
+                        <h3 class="text-lg font-semibold mb-4">Weekly Activity</h3>
+                        <div class="h-48">
+                            <canvas id="miniActivityChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="glass-card p-6 rounded-2xl">
+                        <h3 class="text-lg font-semibold mb-4">Quick Actions</h3>
+                        <div class="space-y-3">
+                            <button onclick="switchTab('tasks')" class="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition flex items-center justify-center gap-2">
+                                <i class="fas fa-plus"></i> Add New Task
+                            </button>
+                            <button onclick="switchTab('revenue')" class="w-full py-3 px-4 rounded-xl bg-white/5 hover:bg-white/10 text-white font-semibold transition flex items-center justify-center gap-2">
+                                <i class="fas fa-dollar-sign"></i> Log Income
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TASKS VIEW -->
+            <div id="view-tasks" class="hidden-tab animate-fade-in">
+                <div class="glass-card p-6 rounded-2xl mb-8">
+                    <h3 class="text-xl font-semibold mb-4">Add New Task</h3>
+                    <form id="add-task-form" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                        <div class="md:col-span-4">
+                            <label class="block text-xs text-gray-500 uppercase mb-1">Task Name</label>
+                            <input type="text" id="task-title" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500 transition" placeholder="e.g. Edit Video">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs text-gray-500 uppercase mb-1">Priority</label>
+                            <select id="task-priority" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500 transition">
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs text-gray-500 uppercase mb-1">Platform</label>
+                            <input type="text" id="task-platform" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500 transition" placeholder="e.g. YouTube">
+                        </div>
+                        <div class="md:col-span-4">
+                            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-4 rounded-lg transition">
+                                Add
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Tasks List -->
+                <div class="glass-card p-6 rounded-2xl mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold">Active Tasks</h3>
+                        <div class="flex gap-2">
+                            <button onclick="filterTasks('all')" class="text-xs text-indigo-400 hover:text-white">All</button>
+                            <button onclick="filterTasks('high')" class="text-xs text-gray-500 hover:text-white">High</button>
+                            <button onclick="filterTasks('medium')" class="text-xs text-gray-500 hover:text-white">Medium</button>
+                        </div>
+                    </div>
+                    <div id="task-list" class="space-y-3">
+                        <p class="text-gray-500 text-center py-4">No active tasks. Great job!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- REVENUE VIEW -->
+            <div id="view-revenue" class="hidden-tab animate-fade-in">
+                <!-- Revenue Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="glass-card p-6 rounded-2xl bg-gradient-to-br from-indigo-900/50 to-purple-900/50">
+                        <h3 class="text-gray-400 text-sm">Total Earnings</h3>
+                        <p class="text-4xl font-bold mt-2" id="rev-total">$0.00</p>
+                        <p class="text-xs text-green-400 mt-2">Lifetime Revenue</p>
+                    </div>
+                    
+                    <div class="glass-card p-6 rounded-2xl">
+                        <h3 class="text-gray-400 text-sm">This Month</h3>
+                        <p class="text-3xl font-bold mt-2" id="rev-month">$0.00</p>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-2xl">
+                        <h3 class="text-gray-400 text-sm">Top Source</h3>
+                        <p class="text-2xl font-bold mt-2" id="rev-top-source">-</p>
+                    </div>
+                </div>
+
+                <!-- Add Revenue Form (No date input - auto date) -->
+                <div class="glass-card p-6 rounded-2xl mb-8">
+                    <h3 class="text-lg font-semibold mb-4">Log Income</h3>
+                    <form id="add-revenue-form" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                        <div class="md:col-span-4">
+                            <label class="block text-xs text-gray-500 uppercase mb-1">Source</label>
+                            <input type="text" id="rev-source" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500 transition" placeholder="e.g. Sponsorship">
+                        </div>
+                        <div class="md:col-span-4">
+                            <label class="block text-xs text-gray-500 uppercase mb-1">Amount ($)</label>
+                            <input type="number" id="rev-amount" step="0.01" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500 transition" placeholder="0.00">
+                        </div>
+                        <div class="md:col-span-4">
+                            <button type="submit" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded-lg transition">
+                                Add Income
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Revenue Analytics Graph -->
+                <div class="glass-card p-6 rounded-2xl mb-8">
+                    <h3 class="text-lg font-semibold mb-4">Revenue Analytics</h3>
+                    <div class="h-64 w-full">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Revenue List -->
+                <div class="glass-card p-6 rounded-2xl">
+                    <h3 class="text-lg font-semibold mb-4">Income History</h3>
+                    <div id="revenue-list" class="space-y-3 max-h-64 overflow-y-auto">
+                        <p class="text-gray-500 text-center py-4">No revenue recorded yet.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Mobile Overlay -->
+    <div id="mobile-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden backdrop-blur-sm"></div>
+
+    <!-- JavaScript -->
+    <script src="js/script.js"></script>
+</body>
+</html>
